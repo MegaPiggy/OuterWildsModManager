@@ -1,9 +1,11 @@
-import unzip from 'unzipper';
+import unzipper from 'unzipper';
 // import fetch from 'node-fetch';
 import fs from 'fs-extra';
 import path from 'path';
 import { remote } from 'electron';
 import { exec } from 'child_process';
+// import { request } from 'https';
+import request from 'request';
 
 import { Readable } from 'stream';
 import { modsText } from '../helpers/static-text';
@@ -70,7 +72,7 @@ export async function unzipFile(
   onProgress: ProgressHandler
 ) {
   const absUnzipPath = path.resolve(unzipPath);
-  const extract = unzip.Extract({ path: absUnzipPath });
+  const extract = unzipper.Extract({ path: absUnzipPath });
   const reader = fs.createReadStream(zipPath);
 
   const totalBytes = fs.statSync(zipPath).size;
@@ -156,6 +158,36 @@ export async function unzipRemoteFile(
   const unzipPath = `${temporaryPath}/${temporaryName}`;
 
   await createFolders(unzipPath);
+
+  const zipDirectory = await unzipper.Open.url(request, url);
+  const totalFileCount = zipDirectory.files.length;
+  let extractedFileCount = 0;
+
+  fs.mkdirSync(destinationPath);
+
+  await Promise.all(
+    zipDirectory.files.map(async (file) => {
+      try {
+        const filePath = `${destinationPath}/${file.path}`;
+
+        if (file.type === 'Directory') {
+          fs.mkdirSync(filePath);
+        } else {
+          await fs.writeFile(
+            `${destinationPath}/${file.path}`,
+            await file.buffer()
+          );
+
+          extractedFileCount += 1;
+          onProgress(extractedFileCount / totalFileCount);
+        }
+      } catch (error) {
+        console.error(`Error getting zip file: ${error}`);
+      }
+    })
+  );
+
+  return;
 
   await downloadFile(url, zipPath, onDownloadProgress);
   await unzipFile(zipPath, unzipPath, onUnzipProgress);

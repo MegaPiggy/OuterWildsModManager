@@ -14,5 +14,12 @@
     "postinstall": "yarn electron-rebuild"
   },
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "@types/unzipper": "^0.10.5",
+    "request": "^2.88.2",
+    "unzipper": "^0.10.11"
+  },
+  "devDependencies": {
+    "@types/request": "^2.48.8"
+  }
 }
