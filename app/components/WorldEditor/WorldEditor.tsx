@@ -79,27 +79,34 @@ export const WorldEditor = () => {
   }, [installedAddons]);
 
   return (
-    <PageContainer>
-      <Select
-        onChange={(event) => setModPath(event.target.value as string)}
-        value={modPath}
-        variant="outlined"
-      >
-        {installedAddons.map((addon) => (
-          <MenuItem key={addon.uniqueName} value={addon.modPath}>
-            {addon.name}
-          </MenuItem>
-        ))}
-      </Select>
+    <PageContainer maxWidth={false}>
       <Box
         style={{
           display: 'flex',
           height: '100%',
           position: 'relative',
-          marginTop: 10,
         }}
       >
-        <MenuList style={{ maxHeight: '100%', overflowY: 'auto', width: 300 }}>
+        <MenuList
+          style={{
+            maxHeight: '100%',
+            overflowY: 'auto',
+            width: 300,
+            minWidth: 200,
+          }}
+        >
+          <Select
+            onChange={(event) => setModPath(event.target.value as string)}
+            value={modPath}
+            variant="outlined"
+            fullWidth
+          >
+            {installedAddons.map((addon) => (
+              <MenuItem key={addon.uniqueName} value={addon.modPath}>
+                {addon.name}
+              </MenuItem>
+            ))}
+          </Select>
           {jsonPaths.map((jsonPath) => (
             <MenuItem
               key={jsonPath}
