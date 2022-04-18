@@ -30,9 +30,11 @@ export const WorldEditor = () => {
   const monaco = useMonaco();
   const [jsonPaths, setJsonPaths] = useState<string[]>([]);
   const [fileContent, setFileContent] = useState('');
+  const [selectedFilePath, setSelectedFilePath] = useState('');
   const [modPath, setModPath] = useState('');
 
   const updateFileContent = async (filePath: string) => {
+    setSelectedFilePath(filePath);
     const content = (await fs.readFile(filePath)).toString();
     if (content) {
       setFileContent(content.toString());
@@ -102,7 +104,11 @@ export const WorldEditor = () => {
             fullWidth
           >
             {installedAddons.map((addon) => (
-              <MenuItem key={addon.uniqueName} value={addon.modPath}>
+              <MenuItem
+                selected={modPath === addon.modPath}
+                key={addon.uniqueName}
+                value={addon.modPath}
+              >
                 {addon.name}
               </MenuItem>
             ))}
@@ -111,6 +117,7 @@ export const WorldEditor = () => {
             <MenuItem
               key={jsonPath}
               onClick={() => updateFileContent(jsonPath)}
+              selected={jsonPath === selectedFilePath}
             >
               {path.basename(jsonPath, '.json')}
             </MenuItem>
