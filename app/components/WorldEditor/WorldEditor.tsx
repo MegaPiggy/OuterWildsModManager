@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Editor, { loader, useMonaco } from '@monaco-editor/react';
 import fs from 'fs-extra';
 import path from 'path';
-import { Box, MenuList, MenuItem } from '@material-ui/core';
+import { Box, MenuList, MenuItem, Select } from '@material-ui/core';
 import globby from 'globby';
+import { useRecoilValue } from 'recoil';
 import PageContainer from '../PageContainer';
 import { useDirectoryWatcher } from '../../hooks/use-directory-watcher';
+import { filteredModList } from '../../store';
 
 function ensureFirstBackSlash(str: string) {
   return str.length > 0 && str.charAt(0) !== '/' ? `/${str}` : str;
@@ -24,23 +26,32 @@ loader.config({
   },
 });
 
-const planetsFolderPath = `C:\\Users\\rai\\AppData\\Roaming\\OuterWildsModManager\\OWML\\Mods\\Jammer.jammerlore\\planets`;
-
 export const WorldEditor = () => {
   const monaco = useMonaco();
   const [jsonPaths, setJsonPaths] = useState<string[]>([]);
   const [fileContent, setFileContent] = useState('');
+  const [modPath, setModPath] = useState('');
+
+  const updateFileContent = async (filePath: string) => {
+    const content = (await fs.readFile(filePath)).toString();
+    if (content) {
+      setFileContent(content.toString());
+    } else {
+      throw new Error(`Failed to read json from path ${filePath}`);
+    }
+  };
 
   const directoryWatcherCallback = useCallback(() => {
-    setJsonPaths(
-      globby.sync(`*.json`, {
-        cwd: planetsFolderPath,
-        absolute: true,
-      })
-    );
-  }, []);
+    const paths = globby.sync(`**/*.json`, {
+      cwd: `${modPath}/planets`,
+      absolute: true,
+    });
 
-  useDirectoryWatcher(planetsFolderPath, directoryWatcherCallback);
+    setJsonPaths(paths);
+    updateFileContent(paths[0]);
+  }, [modPath]);
+
+  useDirectoryWatcher(`${modPath}/planets`, directoryWatcherCallback);
 
   useEffect(() => {
     if (!monaco) return;
@@ -53,19 +64,42 @@ export const WorldEditor = () => {
     });
   }, [monaco]);
 
-  const updateFileContent = async (filePath: string) => {
-    const content = (await fs.readFile(filePath)).toString();
-    if (content) {
-      setFileContent(content.toString());
-    } else {
-      throw new Error(`Failed to read json from path ${filePath}`);
-    }
-  };
+  const addonMods = useRecoilValue(filteredModList);
+  const installedAddons = useMemo(
+    () =>
+      addonMods.filter(
+        (addon) => addon.localVersion && addon.parent === 'xen.NewHorizons'
+      ),
+    [addonMods]
+  );
+
+  useEffect(() => {
+    if (!installedAddons || !installedAddons[0]) return;
+    setModPath(installedAddons[0].modPath);
+  }, [installedAddons]);
 
   return (
     <PageContainer>
-      <Box style={{ display: 'flex', height: '100%', position: 'relative' }}>
-        <MenuList>
+      <Select
+        onChange={(event) => setModPath(event.target.value as string)}
+        value={modPath}
+        variant="outlined"
+      >
+        {installedAddons.map((addon) => (
+          <MenuItem key={addon.uniqueName} value={addon.modPath}>
+            {addon.name}
+          </MenuItem>
+        ))}
+      </Select>
+      <Box
+        style={{
+          display: 'flex',
+          height: '100%',
+          position: 'relative',
+          marginTop: 10,
+        }}
+      >
+        <MenuList style={{ maxHeight: '100%', overflowY: 'auto', width: 300 }}>
           {jsonPaths.map((jsonPath) => (
             <MenuItem
               key={jsonPath}
