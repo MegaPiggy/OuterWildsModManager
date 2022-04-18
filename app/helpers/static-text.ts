@@ -3,7 +3,7 @@ export const globalText = {
     mods: 'Mods',
     logs: 'Logs',
     settings: 'Settings',
-    update: 'Update',
+    worldEditor: 'worldEditor',
   },
   startGame: 'Start Game',
   gameRunning: 'Already running',

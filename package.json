@@ -170,11 +170,13 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@monaco-editor/react": "^4.4.2",
     "electron-log": "^4.2.2",
     "electron-updater": "^4.3.4",
     "fs-extra": "^9.0.1",
     "globby": "^11.0.1",
     "lodash": "^4.17.21",
+    "monaco-editor": "^0.33.0",
     "react": "^0.0.0-experimental-f77c7b9d7",
     "react-dom": "^0.0.0-experimental-f77c7b9d7",
     "recoil": "^0.0.10",

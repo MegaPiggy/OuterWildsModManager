@@ -5,6 +5,7 @@ import {
   Build as BuildIcon,
   Dvr as DvrIcon,
   Settings as SettingsIcon,
+  Public as PublicIcon,
 } from '@material-ui/icons';
 
 import { globalText } from '../../helpers/static-text';
@@ -12,6 +13,7 @@ import { selectedTabState } from '../../store';
 import ModsPage from '../Mods';
 import SettingsPage from '../Settings';
 import LogsPage from '../Logs';
+import { WorldEditor } from '../WorldEditor/WorldEditor';
 
 const useTabStyles = makeStyles({
   root: {
@@ -32,6 +34,12 @@ type Tab = {
 };
 
 export const tabList: readonly Tab[] = [
+  // TODO: reset the order
+  {
+    name: globalText.tabs.worldEditor,
+    component: WorldEditor,
+    icon: PublicIcon,
+  },
   {
     name: globalText.tabs.mods,
     component: ModsPage,
