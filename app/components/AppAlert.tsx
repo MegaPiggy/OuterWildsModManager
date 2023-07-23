@@ -1,9 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import {
-  Typography,
   makeStyles,
   Box,
-  Link,
   Container,
 } from '@material-ui/core';
 import { useRecoilValue } from 'recoil';
