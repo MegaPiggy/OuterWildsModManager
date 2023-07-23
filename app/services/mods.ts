@@ -167,6 +167,9 @@ export function openModDirectory(mod: Mod) {
 }
 
 export function openWebsitePage(mod: Mod) {
+  if (mod.uniqueName === 'ow-mod-manager') {
+    shell.openExternal('https://outerwildsmods.com/mod-manager?linked-from-manager=true');
+  }
   if (!mod.slug) {
     throw new Error(modsText.undefinedSlugError);
   }

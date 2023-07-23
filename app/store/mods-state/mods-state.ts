@@ -71,6 +71,7 @@ export const modList = selector({
       addons: [],
       isAlpha: get(settingsState).alphaMode,
       tags: [],
+      slug: 'mod-manager',
     });
   },
 });
