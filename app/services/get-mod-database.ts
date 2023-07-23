@@ -18,6 +18,14 @@ type RemoteMod = {
   alpha?: boolean;
   authorDisplay?: string;
   tags: string[];
+  slug: string;
+  thumbnail: {
+    main?: string;
+    openGraph?: string;
+  };
+  latestReleaseDescription?: string;
+  latestPrereleaseDescription?: string;
+  repoVariations?: string[];
 };
 
 type RemoteModDatabase = {
@@ -66,6 +74,11 @@ export async function getModDatabase(
       alpha,
       authorDisplay,
       tags,
+      slug,
+      thumbnail,
+      latestReleaseDescription,
+      latestPrereleaseDescription,
+      repoVariations
     }: RemoteMod) => {
       // TODO doesnt make sense for this to be here in remote mods
       const modPath = alpha
@@ -92,6 +105,11 @@ export async function getModDatabase(
           .map((addon) => addon.uniqueName),
         isAlpha: alpha,
         tags,
+        slug,
+        thumbnail,
+        latestReleaseDescription,
+        latestPrereleaseDescription,
+        repoVariations
       };
 
       return mod;
